@@ -1,13 +1,11 @@
 package com.sessionhub.sessionhub.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-public class AddUserRequestDto {
+public class LoginRequestDto {
     private String email;
-    private String nickName;
     private String password;
 
 }
