@@ -5,6 +5,9 @@ import com.sessionhub.sessionhub.domain.entity.User;
 import com.sessionhub.sessionhub.domain.repository.UserRepository;
 import com.sessionhub.sessionhub.dto.AddUserRequestDto;
 import com.sessionhub.sessionhub.dto.AddUserResponseDto;
+import com.sessionhub.sessionhub.dto.LoginRequestDto;
+import com.sessionhub.sessionhub.dto.LoginResponseDto;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public AddUserResponseDto signUp(AddUserRequestDto requestDto) {
         if (userRepository.findByNickName(requestDto.getNickName()).isPresent()) {
@@ -29,5 +33,17 @@ public class UserService {
         AddUserResponseDto responseDto = new AddUserResponseDto(user);
 
         return responseDto;
+    }
+
+    public LoginResponseDto logIn(LoginRequestDto requestDto) {
+
+        Optional<User> userOptional = userRepository.findByEmail(requestDto.getEmail());
+
+        if (userOptional.isEmpty() || !passwordEncoder.matches(requestDto.getPassword(), userOptional.get().getPassword())){
+            throw new IllegalArgumentException("유효하지 않은 이메일 또는 비밀번호 입니다.");
+        }
+
+        User user = userOptional.get();
+        return new LoginResponseDto(user.getId(), user.getEmail(), user.getNickName());
     }
 }
