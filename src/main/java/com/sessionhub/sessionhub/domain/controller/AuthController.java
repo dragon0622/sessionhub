@@ -7,6 +7,7 @@ import com.sessionhub.sessionhub.dto.LoginRequestDto;
 import com.sessionhub.sessionhub.dto.LoginResponseDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,4 +40,22 @@ public class AuthController {
 
         return ResponseEntity.ok(responseDto);
     }
+
+    @GetMapping("/auth/session")
+    public ResponseEntity<LoginResponseDto> getSessionInfo(HttpSession session) {
+        LoginResponseDto user = (LoginResponseDto) session.getAttribute("user");
+
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate(); // 세션 삭제
+        return ResponseEntity.ok("Logged out successfully.");
+    }
+
 }
